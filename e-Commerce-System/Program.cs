@@ -13,10 +13,9 @@ builder.Services.AddSwaggerGen();
 
 //
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
-//
-//get ConnectionString
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-//Add ConnectionString Service
 builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(connectionString));
 
 
@@ -34,5 +33,22 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+/**********************Migration if there is any new changes************************/
+using var scope = app.Services.CreateScope();
+var Services = scope.ServiceProvider;
+var context = Services.GetRequiredService<StoreContext>();
+var logger = Services.GetRequiredService<ILogger<Program>>();
+
+try
+{
+    await context.Database.MigrateAsync();
+    await StoreContextSeed.seedAsync(context);
+}
+catch (Exception ex)
+{
+
+    logger.LogError(ex, "Error Occured while migrating process");
+}
 
 app.Run();
