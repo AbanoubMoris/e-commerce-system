@@ -1,5 +1,6 @@
 ﻿using Core.Entities;
 using Core.Interfaces;
+using Core.Specifications;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,8 @@ namespace e_Commerce_System.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            var products = await _productRepo.GetAllAsync();
+            var spec = new ProductWithTypesAndBrandsSpecification(2);
+            var products = await _productRepo.ListAsync(spec);
             return Ok(products);
         }
         [HttpGet("{id}")]
@@ -30,17 +32,19 @@ namespace e_Commerce_System.Controllers
         {
             var product = await _productRepo.GetByIdAsync(id);
             return Ok(product);
+            
         }
         [HttpGet("types")]
         public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProductTypes()
         {
-            var ProductTypes = await _productTypeRepo.GetAllAsync(); 
+            var ProductTypes = await _productTypeRepo.ListAllAsync(); 
             return Ok(ProductTypes);
         }
+         
         [HttpGet("brands")]
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetProductBrands()
         {
-            var ProductBrands = await _productBrandRepo.GetAllAsync();
+            var ProductBrands = await _productBrandRepo.ListAllAsync();
             return Ok(ProductBrands);
         }
     }
