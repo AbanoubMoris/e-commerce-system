@@ -16,6 +16,11 @@ namespace Core.Specifications
             AddIncludes(x => x.ProductType);
             AddIncludes(x => x.ProductBrand);
         }
+        public ProducctWithTypesAndBrandsSpecification()
+        {
+            AddIncludes(x => x.ProductType);
+            AddIncludes(x => x.ProductBrand);
+        }
     }
 
 }
