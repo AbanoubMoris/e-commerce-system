@@ -19,7 +19,7 @@ namespace Core.Specifications
         }
         public Expression<Func<T, bool>> Criteria { get; }
 
-        public List<Expression<Func<T, object>>> Includes { get; } = new List<Expression<Func<T, object>>>();
+        public List<Expression<Func<T, object>>> Includes { get;}=new List<Expression<Func<T, object>>>();
 
         public Expression<Func<T, object>> OrderBy { get; private set; }
 
@@ -45,7 +45,7 @@ namespace Core.Specifications
         {
             OrderByDescending = orderByDescExpression;
         }
-        protected void ApplyPaging(int skip, int take)
+        protected void ApplyPaging(int skip,int take)
         {
             Skip = skip;
             Take = take;
