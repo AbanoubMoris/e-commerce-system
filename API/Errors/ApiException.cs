@@ -4,7 +4,7 @@
     {
 
      
-        public ApiException(int statusCode, string message = null, string details = null) : base(0,message)
+        public ApiException(int statusCode, string message = null, string details = null) : base(statusCode, message)
         {
             Details = details;
         }
