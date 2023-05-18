@@ -23,8 +23,8 @@ namespace e_Commerce_System.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            var spec = new ProductWithTypesAndBrandsSpecification(2);
-            var products = await _productRepo.ListAsync(spec);
+            var spec = new ProductWithTypesAndBrandsSpecification(1);
+            var products = await _productRepo.GetEntityWithSpec(spec);
             return Ok(products);
         }
         [HttpGet("{id}")]

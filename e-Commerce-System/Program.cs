@@ -1,6 +1,8 @@
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Core.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Core.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,10 +16,15 @@ builder.Services.AddSwaggerGen();
 //
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
+/*
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(connectionString));
+*/
 
+builder.Services.AddDbContext<StoreContext>(opt =>
+{
+    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
+});
 
 var app = builder.Build();
 
@@ -38,17 +45,18 @@ app.MapControllers();
 using var scope = app.Services.CreateScope();
 var Services = scope.ServiceProvider;
 var context = Services.GetRequiredService<StoreContext>();
-var logger = Services.GetRequiredService<ILogger<Program>>();
+var Logger = Services.GetRequiredService<ILogger<Program>>();
 
 try
 {
+    
     await context.Database.MigrateAsync();
     await StoreContextSeed.seedAsync(context);
+
 }
 catch (Exception ex)
 {
-
-    logger.LogError(ex, "Error Occured while migrating process");
+    Logger.LogError(ex, "Error occured while migrating process");
 }
 
 app.Run();
