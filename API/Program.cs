@@ -4,6 +4,7 @@ using Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Core.Entities;
 using Infrastrucure.Data;
+using API.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,12 +23,6 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(connectionString));
 
-/*
-builder.Services.AddDbContext<StoreContext>(opt =>
-{
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-});
-*/
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -36,6 +31,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseMiddleware<ExceptionMiddleware>();
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();

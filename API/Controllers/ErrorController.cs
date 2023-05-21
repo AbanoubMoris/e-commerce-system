@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
 {
+    /*
     [Route("errors/{code}")]
     [ApiController]
     public class ErrorController : BaseApiController
@@ -11,5 +12,5 @@ namespace API.Controllers
         {
             return new ObjectResult(new ApiResponse(code));
         }
-    }
+    }*/
 }

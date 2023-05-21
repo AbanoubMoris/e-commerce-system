@@ -1,4 +1,5 @@
 ﻿using API.DTOs;
+using API.Helper;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
@@ -30,32 +31,30 @@ namespace API.Controllers
             _productRepo = productRepo;
             _mapper = mapper;
         }
-        /*
+        
         [HttpGet("")]
-        public async Task<ActionResult<List<ProductDTO>>> GetProducts()
+        public async Task<ActionResult<Pagination<ProductDTO>>> GetProducts([FromQuery] ProductSpecParams productParams)
         {
-            var spec = new ProducctWithTypesAndBrandsSpecification();
+            var spec = new ProducctWithTypesAndBrandsSpecification(productParams);
+            var countSpec = new ProductWithFiltersForCountSpecification(productParams);
+
+            var totalItems = await _productRepo.CountAsync(countSpec);
+
             var products = await _productRepo.ListAsync(spec);
-            return _mapper.Map<IReadOnlyList<Product>,IReadOnlyList<ProductDTO>>(products);
-        }
-        */
-        [HttpGet()]
-        public async Task<List<ProductDTO>> GetProducts()
-        {
-            var spec = new ProducctWithTypesAndBrandsSpecification();
-            var products = await _productRepo.ListAsync(spec);
-            return _mapper.Map<IReadOnlyList<Product>, List<ProductDTO>>(products);
+
+            var data = _mapper.Map<IReadOnlyList<Product>, List<ProductDTO>>(products);
+            return Ok(new Pagination<ProductDTO>(productParams.PageIndex,productParams.PageSize,totalItems,data));
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ProductDTO>> GetProduct(int id)
         {
-            var spec = new ProducctWithTypesAndBrandsSpecification(id);
+            var spec = new ProducctWithTypesAndBrandsSpecification();
             var product = await _productRepo.GetEntityWithSpec(spec);
             
             return _mapper.Map<Product, ProductDTO>(product);
         }
-
+        
         [HttpGet("types")]
         public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProductTypes()
         {
