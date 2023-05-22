@@ -19,9 +19,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddCors(options =>
+options.AddPolicy("CorsPolicy", policy =>
+{
+    policy.AllowAnyMethod()
+    .AllowAnyHeader()
+    .AllowAnyOrigin();
+}));
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<StoreContext>(options => options.UseSqlServer(connectionString).LogTo(Console.WriteLine, LogLevel.Information));
 
 var app = builder.Build();
 
@@ -32,7 +39,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<ExceptionMiddleware>();
+//app.UseMiddleware<ExceptionMiddleware>();
 app.UseStatusCodePagesWithReExecute("/errors/{0}");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
@@ -40,6 +47,7 @@ app.UseStaticFiles();
 app.UseAuthorization();
 
 app.MapControllers();
+app.UseCors("CorsPolicy");
 
 /**********************Migration if there is any new changes************************/
 using var scope = app.Services.CreateScope();

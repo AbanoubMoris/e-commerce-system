@@ -31,8 +31,8 @@ namespace API.Controllers
             _productRepo = productRepo;
             _mapper = mapper;
         }
-        
-        [HttpGet("")]
+
+        [HttpGet]
         public async Task<ActionResult<Pagination<ProductDTO>>> GetProducts([FromQuery] ProductSpecParams productParams)
         {
             var spec = new ProducctWithTypesAndBrandsSpecification(productParams);
@@ -42,19 +42,20 @@ namespace API.Controllers
 
             var products = await _productRepo.ListAsync(spec);
 
-            var data = _mapper.Map<IReadOnlyList<Product>, List<ProductDTO>>(products);
-            return Ok(new Pagination<ProductDTO>(productParams.PageIndex,productParams.PageSize,totalItems,data));
+            var data = _mapper.Map<IReadOnlyList<Product>, IReadOnlyList<ProductDTO>>(products);
+
+            return Ok(new Pagination<ProductDTO>(productParams.PageIndex, productParams.PageSize, totalItems, data));
         }
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<ProductDTO>> GetProduct(int id)
-        {
-            var spec = new ProducctWithTypesAndBrandsSpecification();
-            var product = await _productRepo.GetEntityWithSpec(spec);
-            
-            return _mapper.Map<Product, ProductDTO>(product);
-        }
-        
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<ProductDTO>> GetProduct(int id)
+        //{
+        //var spec = new ProducctWithTypesAndBrandsSpecification();
+        //var product = await _productRepo.GetEntityWithSpec(spec);
+
+        //return _mapper.Map<Product, ProductDTO>(product);
+        //}
+
         [HttpGet("types")]
         public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProductTypes()
         {
